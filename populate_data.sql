@@ -50,11 +50,11 @@ INSERT INTO `category` (`id`, `name`) VALUES
 -- ----------------------------
 INSERT INTO `user` (`id`, `username`, `password`, `email`, `avatar`, `create_time`) VALUES
 (101, 'admin', '$2a$10$vBiupb2crCt4vibEpaAm9OQ8NuE9INaof9S/tUkL7zTlVCfKzJghe', 'admin@sparkhub.com', '/uploads/avatar6.jpg', NOW()),
-(102, 'creator_alice', '$2a$10$vBiupb2crCt4vibEpaAm9OQ8NuE9INaof9S/tUkL7zTlVCfKzJghe', 'alice@example.com', '/uploads/avatar1.jpg', NOW()),
-(103, 'creator_bob', '$2a$10$vBiupb2crCt4vibEpaAm9OQ8NuE9INaof9S/tUkL7zTlVCfKzJghe', 'bob@example.com', '/uploads/avatar2.jpg', NOW()),
-(104, 'backer_charlie', '$2a$10$vBiupb2crCt4vibEpaAm9OQ8NuE9INaof9S/tUkL7zTlVCfKzJghe', 'charlie@example.com', '/uploads/avatar3.jpg', NOW()),
-(105, 'backer_dave', '$2a$10$vBiupb2crCt4vibEpaAm9OQ8NuE9INaof9S/tUkL7zTlVCfKzJghe', 'dave@example.com', '/uploads/avatar4.jpg', NOW()),
-(106, 'user_eve', '$2a$10$vBiupb2crCt4vibEpaAm9OQ8NuE9INaof9S/tUkL7zTlVCfKzJghe', 'eve@example.com', '/uploads/avatar5.jpg', NOW());
+(102, 'alice', '$2a$10$vBiupb2crCt4vibEpaAm9OQ8NuE9INaof9S/tUkL7zTlVCfKzJghe', 'alice@example.com', '/uploads/avatar1.jpg', NOW()),
+(103, 'bob', '$2a$10$vBiupb2crCt4vibEpaAm9OQ8NuE9INaof9S/tUkL7zTlVCfKzJghe', 'bob@example.com', '/uploads/avatar2.jpg', NOW()),
+(104, 'charlie', '$2a$10$vBiupb2crCt4vibEpaAm9OQ8NuE9INaof9S/tUkL7zTlVCfKzJghe', 'charlie@example.com', '/uploads/avatar3.jpg', NOW()),
+(105, 'dave', '$2a$10$vBiupb2crCt4vibEpaAm9OQ8NuE9INaof9S/tUkL7zTlVCfKzJghe', 'dave@example.com', '/uploads/avatar4.jpg', NOW()),
+(106, 'eve', '$2a$10$vBiupb2crCt4vibEpaAm9OQ8NuE9INaof9S/tUkL7zTlVCfKzJghe', 'eve@example.com', '/uploads/avatar5.jpg', NOW());
 
 -- ----------------------------
 -- 4. 插入用户角色关联表 (user_role)

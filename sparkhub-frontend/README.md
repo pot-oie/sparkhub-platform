@@ -27,13 +27,16 @@
 ```plaintext
 sparkhub-frontend/
 ├── src/
-│   ├── api/          # 所有后端接口封装和类型定义
-│   ├── components/   # 通用和业务组件 (如 ImageUpload, ProjectForm)
+│   ├── api/          # 所有后端接口封装 (auth.ts, project.ts 等)
+│   │   └── types/    # TypeScript DTO (数据传输对象) 定义
+│   ├── components/   # 通用和业务组件 (CommentItem.vue, ProjectForm.vue)
 │   ├── router/       # 路由配置及全局权限守卫 (index.ts)
-│   ├── stores/       # Pinia 状态管理模块
+│   ├── stores/       # Pinia 状态管理模块 (user.ts)
 │   ├── styles/       # 全局样式和主题色定义 (global.css)
-│   ├── utils/        # 工具函数 (请求拦截, URL格式化)
-│   └── views/        # 页面视图 (前台Layout, AdminLayout, HomeView等)
+│   ├── utils/        # 工具函数 (request.ts, format.ts)
+│   └── views/        # 页面视图
+│       ├── admin/    # 后台管理页面 (AdminLayout.vue, AdminProjectsView.vue)
+│       └── layout/   # 前台主布局 (LayoutView.vue)
 └── ...
 ```
 
@@ -41,13 +44,17 @@ sparkhub-frontend/
 
 在运行前端项目前，请确保 Node.js 环境已就绪，并且**后端 API 服务已经启动**在 `http://localhost:8080`。
 
-### 1. 安装依赖
+### 1. 环境要求
+
+- Node.js: `^20.19.0` 或 `>=22.12.0` 
+
+### 2. 安装依赖
 
 ```bash
 npm install
 ```
 
-### 2. 开发模式运行 (热重载)
+### 3. 开发模式运行 (热重载)
 
 服务将启动在 http://localhost:5173/。
 
@@ -55,13 +62,13 @@ npm install
 npm run dev
 ```
 
-### 3. 构建生产包
+### 4. 构建生产包
 
 ```bash
 npm run build
 ```
 
-### 4. 代码质量检查
+### 5. 代码质量检查
 
 ```bash
 npm run lint

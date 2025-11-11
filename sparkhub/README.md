@@ -16,29 +16,62 @@
 | 类别          | 技术            | 版本/组件                          | 描述                                |
 | :------------ | :-------------- | :--------------------------------- | :---------------------------------- |
 | **核心框架**  | Spring Boot     | 3.5.7                              | 项目基础框架                        |
-| **语言**      | Java            | 21                                 | (基于你的 `pom.xml` 选择)           |
-| **安全框架**  | Spring Security | RBAC + `@PreAuthorize`             | 负责认证与授权                      |
+| **语言**      | Java            | 21                                 | (根据 `pom.xml` 设定)               |
+| **安全框架**  | Spring Security | 6.x                                | 负责认证与授权                      |
 | **认证协议**  | JWT             | jjwt 0.12.5                        | 用于前后端分离的无状态认证          |
-| **数据访问**  | MyBatis         | 3.x                                | ORM 框架，配合 XML 实现复杂联表查询 |
+| **数据访问**  | MyBatis         | 3.0.5                              | ORM 框架，配合 XML 实现复杂联表查询 |
 | **数据库**    | MySQL           | 5.7+                               | 关系型数据库                        |
 | **缓存**      | Redis           | Spring Cache + StringRedisTemplate | JWT 状态存储和业务数据缓存          |
 | **异步/定时** | Spring Task     | `@EnableScheduling`                | 项目到期自动检查和状态更新          |
 
-## 🗄️ 数据库设计 (8 张核心表)
+## 🗄️ 数据库设计 (11 张表)
 
-`role` (角色), `user` (用户), `user_role` (关联), `category` (分类), `project` (项目), `project_reward` (回报), `user_favorite` (收藏), `backing` (支持订单)。
+本项目数据库为 `sparkhub`，采用了 11 张表，分为“核心业务”和“互动通知”两大模块。
+
+### 1. 核心业务表 (共 8 张)
+| 表名             | 描述         |
+| :--------------- | :----------- |
+| `user`           | 平台用户     |
+| `role`           | 用户角色     |
+| `user_role`      | 用户角色关联 |
+| `category`       | 项目分类     |
+| `project`        | 众筹项目主体 |
+| `project_reward` | 项目回报档位 |
+| `backing`        | 支持订单记录 |
+| `user_favorite`  | 用户收藏记录 |
+
+### 2. 互动与通知表 (共 3 张)
+| 表名                   | 描述                              |
+| :--------------------- | :-------------------------------- |
+| `project_comment`      | 项目评论（支持 `parent_id` 嵌套） |
+| `project_comment_like` | 评论点赞记录                      |
+| `notification`         | 用户通知中心                      |
 
 ## 📡 核心 API 端点示例
 
-| 模块              | 方法   | 路径                         | 权限要求                    |
-| :---------------- | :----- | :--------------------------- | :-------------------------- |
-| **用户/认证**     | `POST` | `/api/auth/login`            | 任何人                      |
-|                   | `POST` | `/api/auth/logout`           | 已认证                      |
-| **项目 (公开)**   | `GET`  | `/api/projects?pageNum=1`    | 任何人                      |
-|                   | `GET`  | `/api/projects/{id}`         | 任何人（逻辑校验）          |
-| **项目 (发起者)** | `POST` | `/api/projects`              | `ROLE_CREATOR`              |
-|                   | `PUT`  | `/api/projects/{id}`         | `ROLE_CREATOR` & 所有者检查 |
-| **支持/支付**     | `POST` | `/api/backings`              | `ROLE_USER`                 |
-|                   | `POST` | `/api/backings/{id}/pay`     | `ROLE_USER` & 事务锁        |
-| **管理 (Admin)**  | `GET`  | `/api/admin/projects`        | `ROLE_ADMIN`                |
-|                   | `PUT`  | `/api/admin/users/{id}/role` | `ROLE_ADMIN`                |
+| 模块              | 方法     | 路径                              | 权限要求                |
+| :---------------- | :------- | :-------------------------------- | :---------------------- |
+| **用户/认证**     | `POST`   | `/api/auth/login`                 | 任何人                  |
+|                   | `POST`   | `/api/auth/register`              | 任何人                  |
+|                   | `POST`   | `/api/auth/logout`                | 已认证                  |
+|                   | `GET`    | `/api/users/me`                   | 已认证                  |
+| **项目 (公开)**   | `GET`    | `/api/projects`                   | 任何人                  |
+|                   | `GET`    | `/api/projects/{id}`              | 任何人（逻辑校验）      |
+| **项目 (发起者)** | `POST`   | `/api/projects`                   | `ROLE_CREATOR`          |
+|                   | `PUT`    | `/api/projects/{id}`              | `ROLE_CREATOR` & 所有者 |
+|                   | `GET`    | `/api/projects/my`                | `ROLE_CREATOR`          |
+| **支持/支付**     | `POST`   | `/api/backings`                   | `ROLE_USER`             |
+|                   | `POST`   | `/api/backings/{id}/pay`          | `ROLE_USER` & 事务锁    |
+|                   | `GET`    | `/api/backings/my`                | `ROLE_USER`             |
+| **收藏**          | `POST`   | `/api/favorites/{projectId}`      | `ROLE_USER`             |
+|                   | `DELETE` | `/api/favorites/{projectId}`      | `ROLE_USER`             |
+| **评论/点赞**     | `GET`    | `/api/projects/{pId}/comments`    | 任何人                  |
+|                   | `POST`   | `/api/projects/{pId}/comments`    | `ROLE_USER`             |
+|                   | `POST`   | `/api/comments/{cId}/like`        | `ROLE_USER`             |
+| **通知**          | `GET`    | `/api/notifications`              | 已认证                  |
+|                   | `GET`    | `/api/notifications/unread-count` | 已认证                  |
+|                   | `POST`   | `/api/notifications/{id}/read`    | 已认证                  |
+| **管理 (Admin)**  | `GET`    | `/api/admin/projects`             | `ROLE_ADMIN`            |
+|                   | `PUT`    | `/api/admin/projects/{id}/status` | `ROLE_ADMIN`            |
+|                   | `GET`    | `/api/admin/users`                | `ROLE_ADMIN`            |
+|                   | `PUT`    | `/api/admin/users/{id}/role`      | `ROLE_ADMIN`            |
