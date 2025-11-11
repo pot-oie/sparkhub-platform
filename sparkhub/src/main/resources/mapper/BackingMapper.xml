@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pot.sparkhub.mapper.BackingMapper">
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO backing
+            (backer_id, project_id, reward_id, backing_amount, status, create_time)
+        VALUES
+            (#{backerId}, #{projectId}, #{rewardId}, #{backingAmount}, #{status}, #{createTime})
+    </insert>
+
+    <select id="findByIdForUpdate" resultType="com.pot.sparkhub.entity.Backing">
+        SELECT * FROM backing WHERE id = #{id} FOR UPDATE
+    </select>
+
+    <update id="update" parameterType="com.pot.sparkhub.entity.Backing">
+        UPDATE backing
+        <set>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <select id="findBackingsByUserId" resultType="com.pot.sparkhub.dto.BackingDetailDTO">
+        SELECT
+            b.id, b.backing_amount, b.status, b.create_time,
+            p.id AS projectId,
+            p.title AS projectTitle,
+            pr.id AS rewardId,
+            pr.title AS rewardTitle
+        FROM
+            backing b
+                LEFT JOIN
+            project p ON b.project_id = p.id
+                LEFT JOIN
+            project_reward pr ON b.reward_id = pr.id
+        WHERE
+            b.backer_id = #{userId}
+        ORDER BY
+            b.create_time DESC
+    </select>
+</mapper>

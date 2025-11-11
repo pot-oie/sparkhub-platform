@@ -1,0 +1,67 @@
+/* 1. 定义品牌色和简约灰阶 */
+:root {
+  /* 品牌色 */
+  --spark-primary-color: #00bfa5; /* 生机青 (主色调) */
+  --spark-accent-color: #ffd600; /* 活力黄 (辅助色) */
+
+  /* 简约灰阶 (用于背景、边框、文字) */
+  --spark-bg-color: #f7f8fa; /* 页面背景 (非常浅的灰) */
+  --spark-panel-color: #ffffff; /* 卡片/面板背景 (白色) */
+  --spark-border-color: #ebeef5; /* 边框/分隔线 */
+
+  /* 文字颜色 */
+  --spark-text-primary: #303133;
+  --spark-text-regular: #606266;
+  --spark-text-secondary: #909399;
+}
+
+/* 2. 覆盖 Element Plus 的主色调 */
+:root {
+  --el-color-primary: var(--spark-primary-color);
+
+  /* 提供主色调的 "light" 和 "dark" 变体 */
+  /* 这是根据 #00bfa5 计算出来的 */
+  --el-color-primary-light-1: #19c3ab;
+  --el-color-primary-light-2: #33c7b1;
+  --el-color-primary-light-3: #4dccb7;
+  --el-color-primary-light-4: #66d0bd;
+  --el-color-primary-light-5: #80d5c3;
+  --el-color-primary-light-6: #99d9c9;
+  --el-color-primary-light-7: #b3ded0;
+  --el-color-primary-light-8: #cce2d6;
+  --el-color-primary-light-9: #e6f1e9; /* 最浅，用于 hover */
+
+  --el-color-primary-dark-2: #009984; /* 用于 active */
+}
+
+/* 3. 设置全局“简约”风格 */
+html {
+  /* 改进的盒子模型 */
+  box-sizing: border-box;
+}
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+body {
+  /* 设置全局背景色 */
+  background-color: var(--spark-bg-color);
+
+  /* 改进的字体渲染 */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* 设置主文字颜色 */
+  color: var(--spark-text-primary);
+  margin: 0;
+}
+
+/* 统一卡片样式 (我们将大量使用) */
+.el-card {
+  /* 移除卡片的默认边框，使用阴影代替 */
+  border: none !important;
+  /* 增加一点圆角，显得更柔和 */
+  border-radius: 8px !important;
+}

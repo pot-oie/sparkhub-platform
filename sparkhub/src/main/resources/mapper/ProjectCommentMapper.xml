@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pot.sparkhub.mapper.ProjectCommentMapper">
+
+    <select id="findByProjectId" resultType="com.pot.sparkhub.dto.CommentDetailDTO">
+        SELECT
+            c.id,
+            c.content,
+            c.like_count, c.create_time,
+            c.user_id,
+            c.parent_id,
+            u.username,
+            u.avatar
+        FROM
+            project_comment c
+                LEFT JOIN
+            user u ON c.user_id = u.id
+        WHERE
+            c.project_id = #{projectId}
+        ORDER BY
+            c.create_time ASC
+    </select>
+
+    <select id="findLikedCommentIdsByUser" resultType="java.lang.Long">
+        SELECT comment_id
+        FROM project_comment_like
+        WHERE user_id = #{userId}
+        AND comment_id IN
+        <foreach item="item" collection="commentIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+</mapper>

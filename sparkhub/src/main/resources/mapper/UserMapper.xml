@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pot.sparkhub.mapper.UserMapper">
+
+    <resultMap id="UserWithRolesResultMap" type="com.pot.sparkhub.entity.User">
+        <id property="id" column="user_id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="email" column="email"/>
+        <result property="avatar" column="avatar"/>
+        <result property="createTime" column="create_time"/>
+        <collection property="roles"
+                    column="user_id"
+                    select="com.pot.sparkhub.mapper.UserMapper.findRolesByUserId" />
+    </resultMap>
+    <select id="findByUsername" resultMap="UserWithRolesResultMap">
+        SELECT
+            u.id AS user_id,
+            u.username,
+            u.password,
+            u.email,
+            u.avatar,
+            u.create_time
+        FROM
+            user u
+        WHERE
+            u.username = #{username}
+    </select>
+
+    <update id="updateUser" parameterType="com.pot.sparkhub.entity.User">
+        UPDATE user
+        <set>
+            <if test="email != null">
+                email = #{email},
+            </if>
+            <if test="password != null">
+                password = #{password},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.pot.sparkhub.entity.User">
+        INSERT INTO user (username, password, email, avatar, create_time)
+        VALUES (#{username}, #{password}, #{email}, #{avatar}, #{createTime})
+    </insert>
+
+    <select id="findAllWithRoles" resultMap="UserWithRolesResultMap">
+        SELECT
+            u.id AS user_id,
+            u.username,
+            u.password,
+            u.email,
+            u.avatar,
+            u.create_time
+        FROM
+            user u
+        ORDER BY
+            u.id ASC
+    </select>
+    <select id="findRolesByUserId" resultType="com.pot.sparkhub.entity.Role">
+        SELECT
+            r.id,
+            r.name
+        FROM
+            role r
+                INNER JOIN
+            user_role ur ON r.id = ur.role_id
+        WHERE
+            ur.user_id = #{userId}
+    </select>
+</mapper>

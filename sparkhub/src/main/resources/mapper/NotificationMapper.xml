@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pot.sparkhub.mapper.NotificationMapper">
+
+    <resultMap id="NotificationDTOResultMap" type="com.pot.sparkhub.dto.NotificationDTO">
+        <id property="id" column="n_id"/>
+        <result property="content" column="n_content"/>
+        <result property="type" column="n_type"/>
+        <result property="linkUrl" column="n_link_url"/>
+        <result property="isRead" column="n_is_read"/>
+        <result property="createTime" column="n_create_time"/>
+        <result property="senderId" column="s_id"/>
+        <result property="senderUsername" column="s_username"/>
+        <result property="senderAvatar" column="s_avatar"/>
+    </resultMap>
+
+    <select id="findNotificationsByRecipientId" resultMap="NotificationDTOResultMap">
+        SELECT
+        n.id AS n_id,
+        n.content AS n_content,
+        n.type AS n_type,
+        n.link_url AS n_link_url,
+        n.is_read AS n_is_read,
+        n.create_time AS n_create_time,
+        s.id AS s_id,
+        s.username AS s_username,
+        s.avatar AS s_avatar
+        FROM
+        notification n
+        LEFT JOIN
+        user s ON n.sender_id = s.id  WHERE
+        n.recipient_id = #{recipientId}
+
+        <if test="filter == 'unread'">
+            AND n.is_read = false
+        </if>
+        <if test="filter == 'system'">
+            AND n.sender_id IS NULL
+        </if>
+        <if test="filter == 'interaction'">
+            AND n.sender_id IS NOT NULL
+        </if>
+
+        ORDER BY
+        n.create_time DESC
+    </select>
+</mapper>

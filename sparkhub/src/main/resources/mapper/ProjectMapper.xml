@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pot.sparkhub.mapper.ProjectMapper">
+
+    <sql id="ProjectSummaryColumns">
+        <![CDATA[
+        p.id, p.title, p.cover_image, p.goal_amount, p.current_amount,
+            p.end_time, p.status, p.create_time,
+            u.username AS creatorName,
+            c.name AS categoryName
+        ]]>
+    </sql>
+
+    <sql id="ProjectSummaryJoins">
+        <![CDATA[
+        FROM project p
+            LEFT JOIN user u ON p.creator_id = u.id
+            LEFT JOIN category c ON p.category_id = c.id
+        ]]>
+    </sql>
+
+    <resultMap id="ProjectDetailResultMap" type="com.pot.sparkhub.dto.ProjectDetailDTO">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="coverImage" column="cover_image"/>
+        <result property="goalAmount" column="goal_amount"/>
+        <result property="currentAmount" column="current_amount"/>
+        <result property="endTime" column="end_time"/>
+        <result property="status" column="status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="creatorName" column="creatorName"/>
+        <result property="categoryName" column="categoryName"/>
+        <result property="description" column="description"/>
+        <result property="creatorId" column="creator_id"/>
+        <result property="isFavorite" column="is_favorited"/>
+
+        <collection property="rewards" ofType="com.pot.sparkhub.entity.ProjectReward">
+            <id property="id" column="reward_id"/>
+            <result property="title" column="reward_title"/>
+            <result property="description" column="reward_description"/>
+            <result property="amount" column="reward_amount"/>
+            <result property="stock" column="reward_stock"/>
+            <result property="imageUrl" column="reward_image_url"/>
+        </collection>
+
+        <collection property="backerIds"
+                    select="findBackerIdsByProjectId"
+                    column="id"
+                    ofType="java.lang.Long"/>
+    </resultMap>
+
+    <select id="findProjectDetailById" resultMap="ProjectDetailResultMap">
+        SELECT
+        <include refid="ProjectSummaryColumns" />,
+        p.description,
+        p.category_id AS categoryId,
+        p.creator_id,
+        pr.id AS reward_id,
+        pr.title AS reward_title,
+        pr.description AS reward_description,
+        pr.amount AS reward_amount,
+        pr.stock AS reward_stock,
+        pr.image_url AS reward_image_url,
+
+        CASE
+        WHEN uf.user_id IS NOT NULL THEN 1
+        ELSE 0
+        END AS is_favorited FROM
+        project p
+        LEFT JOIN user u ON p.creator_id = u.id
+        LEFT JOIN category c ON p.category_id = c.id
+        LEFT JOIN project_reward pr ON p.id = pr.project_id
+        LEFT JOIN user_favorite uf ON p.id = uf.project_id AND uf.user_id = #{currentUserId}
+        WHERE
+        p.id = #{id}
+    </select>
+
+    <select id="findProjectSummaries" resultType="com.pot.sparkhub.dto.ProjectSummaryDTO">
+        SELECT
+        <include refid="ProjectSummaryColumns" />
+        <include refid="ProjectSummaryJoins" />
+        <where>
+            <if test="status != null">
+                p.status = #{status}
+            </if>
+        </where>
+        ORDER BY p.create_time DESC
+    </select>
+
+    <select id="findProjectSummariesByCreatorId" resultType="com.pot.sparkhub.dto.ProjectSummaryDTO">
+        SELECT
+            p.id,
+            p.title,
+            p.description,
+            p.cover_image AS coverImage,
+            p.goal_amount AS goalAmount,
+            p.current_amount AS currentAmount,
+            p.status,
+            p.end_time AS endTime
+        FROM
+            project p
+        WHERE
+            p.creator_id = #{creatorId}
+        ORDER BY
+            p.create_time DESC
+    </select>
+
+    <insert id="insertProject" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.pot.sparkhub.entity.Project">
+        INSERT INTO project
+        (creator_id, category_id, title, description, cover_image,
+         goal_amount, current_amount, end_time, status, create_time)
+        VALUES
+            (#{creatorId}, #{categoryId}, #{title}, #{description}, #{coverImage},
+             #{goalAmount}, #{currentAmount}, #{endTime}, #{status}, #{createTime})
+    </insert>
+
+    <update id="updateProject" parameterType="com.pot.sparkhub.entity.Project">
+        UPDATE project
+        <set>
+            <if test="title != null">title = #{title},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="coverImage != null">cover_image = #{coverImage},</if>
+            <if test="categoryId != null">category_id = #{categoryId},</if>
+            <if test="endTime != null">end_time = #{endTime},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="currentAmount != null">current_amount = #{currentAmount},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <select id="findProjectByIdForUpdate" resultType="com.pot.sparkhub.entity.Project">
+        SELECT * FROM project WHERE id = #{id} FOR UPDATE
+    </select>
+
+</mapper>

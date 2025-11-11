@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pot.sparkhub.mapper.RewardMapper">
+
+    <insert id="insertRewardList" parameterType="java.util.List">
+        INSERT INTO project_reward (project_id, title, description, amount, stock, image_url)
+        VALUES
+        <foreach collection="rewards" item="reward" separator=",">
+            (
+            #{reward.projectId},
+            #{reward.title},
+            #{reward.description},
+            #{reward.amount},
+            #{reward.stock},
+            #{reward.imageUrl}
+            )
+        </foreach>
+    </insert>
+
+    <select id="findByIdForUpdate" resultType="com.pot.sparkhub.entity.ProjectReward">
+        SELECT * FROM project_reward WHERE id = #{id} FOR UPDATE
+    </select>
+
+    <update id="update" parameterType="com.pot.sparkhub.entity.ProjectReward">
+        UPDATE project_reward
+        <set>
+            <if test="stock != null">stock = #{stock},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+</mapper>

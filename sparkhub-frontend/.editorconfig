@@ -1,0 +1,18 @@
+# EditorConfig is awesome: https://EditorConfig.org
+
+# 声明这是顶级配置文件，编辑器将不再向上搜索
+root = true
+
+# [*] 表示应用于所有文件
+[*]
+indent_style = space
+indent_size = 2
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+# [*.md] 专门为 Markdown 文件设置
+[*.md]
+# MD 文件中的行尾空格可能有特殊含义（如换行），所以不自动删除
+trim_trailing_whitespace = false
