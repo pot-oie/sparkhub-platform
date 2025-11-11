@@ -65,9 +65,15 @@ CREATE DATABASE sparkhub CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 3. **导入表结构和初始数据**：
 
-* 执行您的 SQL 脚本，创建上述 11 张表。
+* 为了快速启动项目，我们已在仓库中提供了完整的数据库示例脚本。
 
-* **重要：** 必须在 `role` 表中初始化至少三条数据：`ROLE_USER`、`ROLE_CREATOR` 和 `ROLE_ADMIN`，以确保用户注册和权限模块正常工作。
+  请在您的 `sparkhub` 数据库中**按顺序**执行以下两个文件：
+
+  **1. `create_tables.sql`**：用于创建所有 11 个表的结构。
+
+  **2. `populate_data.sql`**：用于填充一套完整的模拟数据（已包含 `ROLE_USER` 等必需角色、用户、项目、评论和通知）。
+
+  - **[提示]** `populate_data.sql` 脚本会首先清空 (TRUNCATE) 所有相关表，因此可以安全地重复执行以重置数据库。
 
 4. **配置后端连接**：
 
