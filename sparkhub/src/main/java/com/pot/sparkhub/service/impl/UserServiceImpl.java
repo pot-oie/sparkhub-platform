@@ -72,7 +72,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional // 确保操作原子性
     @PreAuthorize("hasRole('ROLE_ADMIN')") // 仅限管理员
-    public void manageUserRole(Long userId, String roleName, boolean isAdd) {
+    public User manageUserRole(Long userId, String roleName, boolean isAdd) {
 
         // 1. 验证目标用户是否存在 (使用新的 findById)
         // 解决了 'findById' 无法解析的错误
@@ -89,10 +89,10 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("目标角色不存在: " + roleName);
         }
 
-        // 3. 检查当前用户是否已经拥有该角色
-        // 重新查询用户以确保角色信息是最新的
-        // (注: findByUsername 会触发 XML 中的复杂查询，包含角色)
-        List<Role> currentUserRoles = userMapper.findByUsername(targetUser.getUsername()).getRoles();
+        // 3. 定义 userWithRoles 变量，确保后续 return 语句可用
+        //    (注: findByUsername 会触发 XML 中的复杂查询，包含角色)
+        User userWithRoles = userMapper.findByUsername(targetUser.getUsername());
+        List<Role> currentUserRoles = userWithRoles.getRoles();
 
         boolean alreadyHasRole = currentUserRoles.stream()
                 // 使用我们刚刚查到的 roleId 来进行比较
@@ -102,7 +102,7 @@ public class UserServiceImpl implements UserService {
         if (isAdd) {
             // --- 添加角色 ---
             if (alreadyHasRole) {
-                return; // 已经有该角色，直接返回
+                return userWithRoles; // 已经有该角色，直接返回
             }
             // 使用查到的 roleId 进行插入
             userMapper.insertUserRole(userId, roleId);
@@ -118,7 +118,7 @@ public class UserServiceImpl implements UserService {
         } else {
             // --- 移除角色 ---
             if (!alreadyHasRole) {
-                return; // 没有该角色，直接返回
+                return userWithRoles; // 没有该角色，直接返回
             }
             // 使用查到的 roleId 进行删除
             userMapper.deleteUserRole(userId, roleId);
@@ -132,6 +132,8 @@ public class UserServiceImpl implements UserService {
                     "/profile"
             );
         }
+        // 6. 返回更新后的用户实体 (包含最新角色)
+        return userMapper.findByUsername(targetUser.getUsername());
     }
 
     /**

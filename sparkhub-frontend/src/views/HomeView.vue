@@ -7,6 +7,7 @@
       </h1>
       <p class="hero-subtitle">在 SparkHub 找到支持，将你的想法变为现实。</p>
       <el-button
+        v-if="isCreator"
         type="primary"
         size="large"
         class="hero-cta-button"
@@ -96,6 +97,8 @@ import type { Project } from '@/api/types/project'
 import { formatImageUrl } from '@/utils/format'
 import { ElMessage } from 'element-plus'
 import { Opportunity } from '@element-plus/icons-vue'
+import { useUserStore } from '@/stores/user'
+import { computed } from 'vue'
 
 // --- 1. 状态定义 ---
 const loading = ref(true)
@@ -106,6 +109,8 @@ const listParams = ref({
   pageNum: 1,
   pageSize: 9, // 3x3 布局
 })
+const userStore = useUserStore()
+const isCreator = computed(() => userStore.isCreator)
 
 // --- 2. 加载数据 ---
 onMounted(() => {

@@ -52,7 +52,7 @@ export const updateAvatarApi = (data: UpdateAvatarDTO) => {
   // 假设后端成功后会返回更新后的 User DTO
   return service<BackendResult<UserDTO>>({
     url: '/users/avatar',
-    method: 'PUT',
+    method: 'POST',
     data: data,
   }) as unknown as Promise<UserDTO>
 }

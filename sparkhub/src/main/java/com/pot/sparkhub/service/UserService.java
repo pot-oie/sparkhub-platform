@@ -18,8 +18,9 @@ public interface UserService {
      * @param userId 目标用户ID
      * @param roleName 角色名称
      * @param isAdd true=添加, false=移除
+     * @return 更新后的 User 实体
      */
-    void manageUserRole(Long userId, String roleName, boolean isAdd);
+    User manageUserRole(Long userId, String roleName, boolean isAdd);
 
     /**
      * [User] 更新当前登录用户的邮箱

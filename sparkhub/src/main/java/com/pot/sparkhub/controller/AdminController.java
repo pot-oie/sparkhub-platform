@@ -74,7 +74,7 @@ public class AdminController {
      * 管理员修改用户角色 (添加或移除)
      */
     @PutMapping("/users/{id}/role")
-    public Result<?> manageUserRole(
+    public Result<User> manageUserRole(
             @PathVariable Long id,
             @RequestBody RoleUpdateDTO roleUpdateDTO
     ) {
@@ -85,13 +85,13 @@ public class AdminController {
             }
 
             // 执行服务操作
-            userService.manageUserRole(
+            User updatedUser = userService.manageUserRole(
                     id,
                     roleUpdateDTO.getRoleName(),
                     roleUpdateDTO.getIsAdd()
             );
 
-            return Result.success();
+            return Result.success(updatedUser);
         } catch (Exception e) {
             return Result.error(400, "角色管理失败: " + e.getMessage());
         }
